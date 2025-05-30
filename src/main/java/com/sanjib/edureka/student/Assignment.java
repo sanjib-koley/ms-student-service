@@ -1,16 +1,10 @@
 package com.sanjib.edureka.student;
 
-import java.util.List;
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -41,9 +35,16 @@ public class Assignment {
 	@Column(name = "days_remaining")
 	private int daysRemaining;
 
+	/*
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "student_assignment_details", joinColumns = { @JoinColumn(name = "id")}, inverseJoinColumns = {
 					@JoinColumn(name = "course_id") })
 	private List<StudentCourseDetails> courseDetails;
-
+	*/
+	
+	@Column(name = "student_id",nullable=false)
+	private int studentId;
+	
+	@Column(name = "course_id",nullable=false)
+	private int courseId;
 }

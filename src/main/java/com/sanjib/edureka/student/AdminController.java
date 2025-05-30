@@ -1,10 +1,8 @@
 package com.sanjib.edureka.student;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,13 +38,15 @@ public class AdminController {
 	
 	@PostMapping("/register/teacher/course/{courseId}")
 	public Teacher addTeacher(@RequestBody Teacher teacher,@PathVariable("courseId") int courseId) {
+		
+		teacherRepository.save(teacher);
 		Course course = courseRepository.findById(courseId).get();
-		teacher.setCourses(new ArrayList<>());
-		teacher.getCourses().add(course);
-		return teacherRepository.save(teacher);
+		course.setTeacher(teacher);
+		courseRepository.save(course);
+		return teacher;
 	}
 	
-	@PostMapping("/register/student/course/{studentId}/{courseId}")
+	@PostMapping("/register/student/{studentId}/course/{courseId}")
 	public Student addCourseForStudent(@PathVariable("studentId") int studentId,@PathVariable("courseId") int courseId) {
 		
 		Student student = studentRepository.findById(studentId).get();

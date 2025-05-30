@@ -2,6 +2,8 @@ package com.sanjib.edureka.student;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -33,7 +35,8 @@ public class Teacher {
 	@Column(name="name")
 	private String name;
 	
-	@OneToMany(mappedBy="teacher", fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="teacher", fetch=FetchType.EAGER)
+	@JsonIgnore
 	private List<Course> courses;
 	
 }

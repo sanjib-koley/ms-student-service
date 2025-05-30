@@ -3,28 +3,20 @@ package com.sanjib.edureka.student;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
-
 
 @RestController
-@RequestMapping("/api/v1/teacher")
+@RequestMapping("/api/v1")
 public class TeacherController {
-	
-	
 	
 	@Autowired
 	private TeacherRepository teacherRepository;
@@ -33,7 +25,7 @@ public class TeacherController {
 	private CourseRepository courseRepository;
 	
 	@Autowired
-	StudentCourseDetailsRepository studentCourseDetailsRepository;
+	StudentAssignmentDetailsRepository studentAssignmentDetailsRepository;
 	
 	@Autowired
 	AssignmentRepository assignmentRepository;
@@ -45,34 +37,45 @@ public class TeacherController {
 		return courses;
 	}
 	
-	@GetMapping("/{teacherId}/course/{courseId}/assignment")
-	public List<Assignment> showTeacherCourseDetails(@PathVariable("teacherId") int teacherId,
-			@PathVariable("courseId") int courseId) {
+	
+	
+	@PostMapping("/course/{courseId}/add/assignment")
+	public String addAssignment(@PathVariable("courseId") int courseId,
+			@RequestBody Assignment assignmentView) {
 
-		
-		List<Assignment> assignments =null;
-		Teacher teacher = teacherRepository.findById(teacherId).get();
 		Course course = courseRepository.findById(courseId).get();
-
 		List<Student> students = course.getStudents();
 
-		if (students.size() != 0) {
+		for (Student student : students) {
 
-			assignments = studentCourseDetailsRepository
-					.findByStudentIdAndCourseId(students.get(0).getId(), courseId).get().getAssignments();
+			Assignment assignment = new Assignment();
+			assignment.setName(assignmentView.getName());
+			assignment.setDueDate(assignmentView.getDueDate());
+			assignment.setStudentId(student.getId());
+			assignment.setCourseId(courseId);
 
-			for (Assignment assignment : assignments) {
-				int daysRemaining = findDayDifference(assignment);
-				assignment.setDaysRemaining(daysRemaining);
-				assignmentRepository.save(assignment);
-			}
+			int daysRemaining = findDayDifference(assignment);
+			assignment.setDaysRemaining(daysRemaining);
+			assignmentRepository.save(assignment);
 		}
 
-		return assignments;
+		return "Assignment Created";
 	}
 	
-	
-	
+	@GetMapping("/course/{courseId}/get/assignment")
+	public List<Assignment> showTeacherCourseDetails(@PathVariable("courseId") int courseId) {
+
+		List<Assignment> assignments = null;
+
+		assignments = studentAssignmentDetailsRepository.findByCourseId(courseId);
+
+		for (Assignment assignment : assignments) {
+			int daysRemaining = findDayDifference(assignment);
+			assignment.setDaysRemaining(daysRemaining);
+			assignmentRepository.save(assignment);
+		}
+		return assignments;
+	}
 	
 	private int findDayDifference(Assignment assignment) {
 		String dateString = assignment.getDueDate();
