@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 
 @RestController
 @RequestMapping("/api/v1")
@@ -22,7 +24,6 @@ public class AdminController {
 	
 	@Autowired
 	private StudentRepository studentRepository;
-	
 	
 	
 	@PostMapping("/student/add")
